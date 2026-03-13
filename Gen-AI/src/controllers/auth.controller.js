@@ -1,4 +1,5 @@
 const userModel = require('../models/user.model');
+const tokenBlacklistModel = require('../models/blackList.model');
 
 async function userRegisterController(req,res){
 
@@ -75,4 +76,16 @@ async function userLoginController(req,res){
 
 }
 
-module.exports = {userRegisterController, userLoginController};
+async function  userLogoutController(req,res){
+    const token = req.cookies.token;
+    if(token){
+        await tokenBlacklistModel.create({token});
+    }
+    res.clearCookie("token");
+    res.status(200).json({
+        message:"User logged out successfully"
+    })
+
+}
+
+module.exports = {userRegisterController, userLoginController, userLogoutController};
