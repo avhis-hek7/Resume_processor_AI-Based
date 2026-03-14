@@ -1,5 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
@@ -24,6 +25,13 @@ router.post('/login', authController.userLoginController)
 */
 router.get('/logout', authController.userLogoutController)
 
+/**
+ * @route GET /api/auth/get-me
+ * @description get the current logged in user details
+ * @access Private
+*/
+
+router.get('/get-me',authMiddleware.authUserMiddleware,  )
 
 
 
