@@ -97,9 +97,9 @@ async function getMeController(req, res) {
       });
     }
 
-    console.log(req.user)
+
     const user = await userModel.findById(req.user.userId).select('-password');
-    console.log(user)
+  
 
 
 
