@@ -88,4 +88,42 @@ async function  userLogoutController(req,res){
 
 }
 
-module.exports = {userRegisterController, userLoginController, userLogoutController};
+async function getMeController(req, res) {
+  try {
+     
+    if (!req.user) {
+      return res.status(401).json({
+        message: "User not authenticated"
+      });
+    }
+
+    console.log(req.user)
+    const user = await userModel.findById(req.user.userId).select('-password');
+    console.log(user)
+
+
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    res.status(200).json({
+      message: "User details fetch successfully.",
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server error"
+    });
+  }
+}
+
+module.exports = {userRegisterController, userLoginController, userLogoutController, getMeController};
