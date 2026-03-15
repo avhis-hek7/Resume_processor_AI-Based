@@ -27,7 +27,13 @@ async function userRegisterController(req, res) {
 
   const token = await user.generateToken();
 
-  res.cookie("token", token);
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+  };
+
+  res.cookie("token", token, cookieOptions);
 
   return res.status(201).json({
     message: "User Register successfully.",
@@ -59,10 +65,13 @@ async function userLoginController(req, res) {
 
   const token = await isExistUser.generateToken();
 
-  res.cookie("token", token, {
+  const cookieOptions = {
     httpOnly: true,
-    sameSite: "lax",
-  });
+    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+  };
+
+  res.cookie("token", token, cookieOptions);
 
   return res.status(200).json({
     message: "User login Successfully",
