@@ -87,3 +87,5 @@ Preferred:
 - Exposure to distributed systems.
 - Knowledge of message queues (Kafka, RabbitMQ).
 `
+
+module.exports = {resume,selfDescription, jobDescription}
