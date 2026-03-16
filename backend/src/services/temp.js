@@ -88,4 +88,8 @@ Preferred:
 - Knowledge of message queues (Kafka, RabbitMQ).
 `
 
-module.exports = {resume,selfDescription, jobDescription}
+module.exports = {
+  resume,
+  selfDescription,
+  jobDescription
+}
