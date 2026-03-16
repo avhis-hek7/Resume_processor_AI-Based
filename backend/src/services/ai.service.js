@@ -46,15 +46,25 @@ async function generateInterviewReport({resume, selfDescription, jobDescription}
                         Job Description: ${jobDescription} `
 
     const response = await ai.models.generateContent({
-        model:"gemini-3-flash-preview",
+        model:"gemini-2.5-flash",
         contents:prompt,
         config:{
             responseMimeType:"application/json",
-            responseSchema:zodToJsonSchema(interviewReportSchema)
+            responseSchema:zodToJsonSchema(interviewReportSchema),
+            temperature: 0, // <--- deterministic output
+            candidateSeed: 12345 // optional: some APIs support a seed
+
         }
     })
     return JSON.parse(response.text)
+   
 
 }
 
 module.exports = generateInterviewReport
+
+
+
+
+
+

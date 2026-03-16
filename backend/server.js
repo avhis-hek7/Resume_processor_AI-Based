@@ -10,7 +10,7 @@ const connectDb = require('./src/config/db');
 
 connectDb();
 // invokeGeminiAi();
-// generateInterviewReport({resume,selfDescription,jobDescription})
+// generateInterviewReport({resume, selfDescription, jobDescription})
 
 
 
