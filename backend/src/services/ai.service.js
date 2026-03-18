@@ -6,13 +6,7 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENAI_API_KEY
 })
 
-// async function invokeGeminiAi(){
-//     const response = await ai.models.generateContent({
-//         model:"gemini-2.5-flash",
-//         contents:"Hello gemini ! Explain what is Interview ?"
-//     })
-//     console.log(response.text)
-// }
+
 
 const interviewReportSchema = z.object({
     matchScore: z.number().describe("A score between 0 and 100 indicating how well the candidate's profile matches the job describe"),
@@ -38,27 +32,53 @@ const interviewReportSchema = z.object({
     title: z.string().describe("The title of the job for which the interview report is generated"),
 })
 
-async function generateInterviewReport({resume, selfDescription, jobDescription}){
+async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
-     const prompt = `Generate an interview report for a candidate with the following details:
-                        Resume: ${resume}
-                        Self Description: ${selfDescription}
-                        Job Description: ${jobDescription} `
+    const prompt = `
+You are an expert technical interviewer.
+
+Generate a structured interview report STRICTLY following the JSON schema.
+
+Rules:
+- Do NOT add extra fields
+- Do NOT omit required fields
+- Ensure matchScore is between 0 and 100
+- Provide at least:
+  - 3 technical questions
+  - 3 behavioral questions
+  - 3 skill gaps
+  - 5-day preparation plan
+
+Candidate Details:
+Resume: ${resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
+`;
 
     const response = await ai.models.generateContent({
-        model:"gemini-2.5-flash",
-        contents:prompt,
-        config:{
-            responseMimeType:"application/json",
-            responseSchema:zodToJsonSchema(interviewReportSchema),
-            temperature: 0, // <--- deterministic output
-            candidateSeed: 12345 // optional: some APIs support a seed
-
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: zodToJsonSchema(interviewReportSchema),
+            temperature: 0
         }
-    })
-    return JSON.parse(response.text)
-   
+    });
 
+    try {
+        const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!text) throw new Error("Empty response from Gemini");
+
+        const parsed = JSON.parse(text);
+
+        return parsed;
+        // console.log(parsed);
+
+    } catch (err) {
+        console.error("Parsing error:", err);
+        throw err;
+    }
 }
 
 module.exports = generateInterviewReport
